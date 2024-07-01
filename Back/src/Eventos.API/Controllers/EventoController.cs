@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Eventos.API.Data;
 using Eventos.API.Models;
 using Microsoft.AspNetCore.Mvc;
+using SQLitePCL;
 
 namespace Eventos.API.Controllers
 
@@ -12,42 +14,26 @@ namespace Eventos.API.Controllers
     [Route("api/[controller]")]
     public class EventoController : ControllerBase
      {
-        public IEnumerable<Evento> _evento = new Evento[]{
-                new Evento() {
-                EventoId = 1,
-                Tema = "Angular",
-                Local = "Teresina",
-                Lote = "1 Lote",
-                DataEvento = DateTime.Now.AddDays(2).ToString("dd/MM/yyyy"),
-                QtdPessoas = 100,
-                ImagemURL = "https://www.google.com.br/images/branding/googlelogo/1"
-            },
-            new Evento() {
-                EventoId = 2,
-                Tema = "C #",
-                Local = "Teresina",
-                Lote = "2 Lote",
-                DataEvento = DateTime.Now.AddDays(2).ToString("dd/MM/yyyy"),
-                QtdPessoas = 100,
-                ImagemURL = "https://www.google.com.br/images/branding/googlelogo/2"
-            }
-            };
+       
+        private readonly DataContext context;
         
-        public EventoController() 
+        public EventoController(DataContext context) 
         {
+            this.context = context;
         
         }
         
         [HttpGet]
         public IEnumerable<Evento> Get()
         {
-            return _evento;
+            return context.Eventos;
         }
 
         [HttpGet("{id}")]
-        public IEnumerable<Evento> GetById(int id)
+        public Evento GetById(int id)
         {
-            return _evento.Where(evento => evento.EventoId == id);
+            return context.Eventos.FirstOrDefault(
+                evento => evento.EventoId == id);
         }
 
         [HttpPost]
